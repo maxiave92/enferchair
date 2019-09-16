@@ -163,5 +163,24 @@ void loop() {
 }
 
 
+int calibration()
+
+{
+  int total =0;
+  int counter;
+for(counter=0;counter<11;counter++)  {
+    delay(1000);
+      int val = analogRead(sensorPin);
+    Serial.print("SimplyFun Calibration Value: ");
+    Serial.print(val);
+    Serial.print("\n");
+    total+=val;
+  }
+  int calibrated = total/10;
+  Serial.print("Calibrated Value:");
+  Serial.print(calibrated);
+  Serial.print("\n");
+  return calibrated;
+}       
 
 
