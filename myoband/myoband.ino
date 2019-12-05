@@ -19,134 +19,114 @@ static int Limite = 0;
 unsigned long escalaTiempo;
 unsigned long tiempoMedio;
 
-
-
-
 int sensorSelector = 0;
 const int se = A1;
 int menu = 0;
 int sensorAccion = 0;
 const int se2 = A5;
-int prom=0;
+int prom = 0;
 
 SoftwareSerial mySerial(10, 11); //rx tx
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   Serial.begin(9450);
   mySerial.begin(9450);
 
-  // inicializamos el filtro poniendo: 
+  // inicializamos el filtro poniendo:
   //           frecuenciaMaxima,
   //           frecuenciaRuido, filtro de ruido activado, filtro de paso bajo activado, filtro de paso alto activado
   filtro.init(frecuenciaMAX, frecuenciaRuido, true, true, true);
 
-  // calculamos el medio de tiempo 
+  // calculamos el medio de tiempo
   tiempoMedio = 1e6 / frecuenciaMAX;
 }
 
-void loop() {
+void loop()
+{
 
   // ------------------------------------------ CODIGO CALIBRACION ------------------------------
-  if(isCalibrado()){
+  if (isCalibrado())
+  {
     calibrar();
     prom = calcularSignalProm();
   }
 
-   sensorSelector=getSignal(); 
+  sensorSelector = getSignal();
 
-   enviarSignal(sensorSelector);
+  enviarSignal(sensorSelector);
 
-//  sensorSelector = analogRead(se);
-//  delay(10);
-//  sensorSelector = analogRead(se);
-//  delay(10);
-//  Serial.print("\n senal = ");
-//  Serial.print(sensorSelector);
-//  delay(500);
-
-
-
-
+  //  sensorSelector = analogRead(se);
+  //  delay(10);
+  //  sensorSelector = analogRead(se);
+  //  delay(10);
+  //  Serial.print("\n senal = ");
+  //  Serial.print(sensorSelector);
+  //  delay(500);
 }
 
+int getSignal()
+{
+  //escalaTiempo = micros();
 
+  int Value = analogRead(SensorInputPin);
 
+  // procesamos la filtracion
+  int DataAfterFilter = filtro.update(Value);
 
-int getSignal(){
-//escalaTiempo = micros();
+  int valorObtenido = sq(DataAfterFilter);
+  // any value under threshold will be set to zero
+  valorObtenido = (valorObtenido > limite) ? valorObtenido : 0;
 
-    int Value = analogRead(SensorInputPin);
-
-    // procesamos la filtracion
-    int DataAfterFilter = filtro.update(Value);
-
-    int valorObtenido = sq(DataAfterFilter);
-    // any value under threshold will be set to zero
-    valorObtenido = (valorObtenido > limite) ? valorObtenido : 0;
-
-   // escalaTiempo = micros() - escalaTiempo;
+  // escalaTiempo = micros() - escalaTiempo;
   return valorObtenido;
-
 }
 
+void calibrar()
+{
+  int i = 0, valorMax = 0;
 
-void calibrar(){
-  int i = 0,valorMax=0;
-  
   int signalTomada = 0;
 
-  while (i<500){
+  while (i < 500)
+  {
     signalTomada = getsignal();
-    if (signalTomada>valorMax){
-      valorMax=signalTomada;
-      }
-    i++;
+    if (signalTomada > valorMax)
+    {
+      valorMax = signalTomada;
     }
- Serial.print("Valor Limite Calibrado=");   
-Serial.print(Limite);
-  Limite=valorMax;
-  
+    i++;
   }
+  Serial.print("Valor Limite Calibrado=");
+  Serial.print(Limite);
+  Limite = valorMax;
+}
 
-  
-bool isCalibrado(){
-  if(Limite==0)
+bool isCalibrado()
+{
+  if (Limite == 0)
     return false;
   else
     return true;
-  }
+}
 
-void enviarSignal(int sensorSelector){
-
-
-
+void enviarSignal(int sensorSelector)
+{
 
   if (sensorSelector >= prom)
     menu = 1;
-
-
-
-
-
-
-
 }
 
+int calcularSignalProm()
+{
+  int i = 0, total = 0;
 
-
-int calcularSignalProm(){
-int i =0, total = 0;
-
-  while(i<500)
+  while (i < 500)
   {
-      total+=getSignal();
-      
+    total += getSignal();
+
     i++;
-    }
-  prom = total/500;
-  return prom;
   }
-
-
- 
-
+  prom = total / 500;
+  return prom;
+}
