@@ -1,3 +1,5 @@
+#include <EMGFilters.h>
+
 #include <SoftwareSerial.h>
 
 //Librerias del sensor GY
@@ -49,20 +51,24 @@ void loop()
   // ------------------------------------------ CALIBRACION ------------------------------
   if (!isCalibrado())
   {
+    Serial.println("Is CALIBRADO:" + !isCalibrado());
     Limite_selector = calibrar(SensorInputSelectorPin, Limite_selector);
-    Limite_accion = calibrar(SensorInputAccionPin, Limite_accion);
-    prom1 = calcularSignalProm(SensorInputSelectorPin, Limite_accion);
-    prom2 = calcularSignalProm(SensorInputAccionPin, Limite_accion);
+    //Limite_accion = calibrar(SensorInputAccionPin, Limite_accion);
+    prom1 = calcularSignalProm(SensorInputSelectorPin, Limite_selector);
+    //prom2 = calcularSignalProm(SensorInputAccionPin, Limite_accion);
   }
   // ------------------------------------------ ENVIO DE INFORMACION ------------------------
-  while (true)
-  {
-    control(prom1);
-    activar(prom2);
-  }
+    //Serial.println("OBTENER SENAL:");
+    //Serial.println(prom1);
+    while(true){
+      control(prom1);
+    //activar(prom2);
+    }
 
 } // END LOOP
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ OBTENER SIGNAL++++++++++++++++++
 int getSignal(int pinSeleccionado, int limite)
 {
   //escalaTiempo = micros();
@@ -75,8 +81,11 @@ int getSignal(int pinSeleccionado, int limite)
   // escalaTiempo = micros() - escalaTiempo;
   return valorObtenido;
 }
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CALIBRAR ++++++++++++++++++
 int calibrar(int pinSensor, int limite)
 {
+  Serial.println("Calibrar:");
   int i = 0, valorMax = 0;
 
   int signalTomada = 0;
@@ -84,21 +93,34 @@ int calibrar(int pinSensor, int limite)
   while (i < 500)
   {
     signalTomada = getSignal(pinSensor, limite);
+    Serial.print("senal tomada: ");
+    Serial.println(signalTomada);
+    Serial.print("valor maximo: ");
+    Serial.println(valorMax);
+    delay(500);
     if (signalTomada > valorMax)
     {
       valorMax = signalTomada;
     }
     i++;
   }
+  Serial.print("========================valor senal: ");
+  Serial.println(valorMax);
+  delay(5000);
+
   return valorMax;
 }
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ IS CALIBRADO ++++++++++++++++++
 bool isCalibrado()
 {
-  if (Limite_accion == 0 && Limite_selector == 0)
+  if (/*Limite_accion == 0 && */Limite_selector == 0)
     return false;
   else
     return true;
 }
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CALCULAR PROMEDIO SIGNAL ++++++++++++++++++
 int calcularSignalProm(int pinSensor, int limite)
 {
   int i = 0, total = 0, prom=0;
@@ -111,6 +133,8 @@ int calcularSignalProm(int pinSensor, int limite)
   return prom;
 }
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CONTROL ++++++++++++++++++
 void control(int valorPromedio){
   int valorSelector = getSignal(SensorInputSelectorPin, Limite_selector);
   if(valorSelector > valorPromedio){
@@ -119,7 +143,7 @@ void control(int valorPromedio){
   }
 }
 
-
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ACTIVAR ++++++++++++++++++
 void activar(int valorPromedio){
    int valorAccion = getSignal(SensorInputAccionPin, Limite_accion);
   if(valorAccion > valorPromedio){
@@ -127,6 +151,8 @@ void activar(int valorPromedio){
   }
 }
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CAMBIAR DIRECCION ++++++++++++++++++
 int cambiarDireccion(){
   if(menu > 4){
     menu = 1;
@@ -136,20 +162,22 @@ int cambiarDireccion(){
   return menu;
 }
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ IMPRIMIR SELECCION ++++++++++++++++++
 void imprimirSeleccion(){
   switch (menu)
   {
   case 1:
-      Serial.print("ADELANTE");
+      Serial.println("ADELANTE");
     break;
   case 2:
-      Serial.print("DERECHA");
+      Serial.println("DERECHA");
     break;
   case 3:
-      Serial.print("IZQUIERDA");
+      Serial.println("IZQUIERDA");
     break;
   case 4:
-      Serial.print("ATRAS");
+      Serial.println("ATRAS");
     break;
   }
 }
