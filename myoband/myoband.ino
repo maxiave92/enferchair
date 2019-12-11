@@ -51,8 +51,8 @@ void loop()
   {
     Limite_selector = calibrar(SensorInputSelectorPin, Limite_selector);
     Limite_accion = calibrar(SensorInputAccionPin, Limite_accion);
-    prom1 = calcularSignalProm(SensorInputSelectorPin);
-    prom2 = calcularSignalProm(SensorInputAccionPin);
+    prom1 = calcularSignalProm(SensorInputSelectorPin, Limite_accion);
+    prom2 = calcularSignalProm(SensorInputAccionPin, Limite_accion);
   }
   // ------------------------------------------ ENVIO DE INFORMACION ------------------------
   while (true)
@@ -83,7 +83,7 @@ int calibrar(int pinSensor, int limite)
 
   while (i < 500)
   {
-    signalTomada = getsignal(pinSensor, limite);
+    signalTomada = getSignal(pinSensor, limite);
     if (signalTomada > valorMax)
     {
       valorMax = signalTomada;
@@ -95,13 +95,13 @@ int calibrar(int pinSensor, int limite)
 bool isCalibrado()
 {
   if (Limite_accion == 0 && Limite_selector == 0)
-    return true;
-  else
     return false;
+  else
+    return true;
 }
 int calcularSignalProm(int pinSensor, int limite)
 {
-  int i = 0, total = 0;
+  int i = 0, total = 0, prom=0;
   while (i < 500)
   {
     total += getSignal(pinSensor, limite);
@@ -129,7 +129,7 @@ void activar(int valorPromedio){
 
 int cambiarDireccion(){
   if(menu > 4){
-    menu = 1
+    menu = 1;
   } else {
     menu++;
   }
