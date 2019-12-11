@@ -51,7 +51,8 @@ void loop()
   // ------------------------------------------ CALIBRACION ------------------------------
   if (!isCalibrado())
   {
-    Serial.println("Is CALIBRADO:" + !isCalibrado());
+    Serial.print("CALIBRADO: ");
+    Serial.println(!isCalibrado());
     Limite_selector = calibrar(SensorInputSelectorPin, Limite_selector);
     //Limite_accion = calibrar(SensorInputAccionPin, Limite_accion);
     prom1 = calcularSignalProm(SensorInputSelectorPin, Limite_selector);
@@ -71,21 +72,28 @@ void loop()
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ OBTENER SIGNAL++++++++++++++++++
 int getSignal(int pinSeleccionado, int limite)
 {
+  Serial.println("================metodo obtener senal============");
+  Serial.print("limite: ");
+  Serial.println(limite);
+  Serial.print("pin: ");
+  Serial.println(pinSeleccionado);
+  delay(500);
+  
   //escalaTiempo = micros();
   int Value = analogRead(pinSeleccionado);
   // procesamos la filtracion
   int DataAfterFilter = filtro.update(Value);
   int valorObtenido = sq(DataAfterFilter);
-  // any value under threshold will be set to zero
-  valorObtenido = (valorObtenido > limite) ? valorObtenido : 0;
-  // escalaTiempo = micros() - escalaTiempo;
-  return valorObtenido;
+    // any value under threshold will be set to zero
+    valorObtenido = (valorObtenido > limite) ? valorObtenido : 0;
+    // escalaTiempo = micros() - escalaTiempo;  
+    return valorObtenido;
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CALIBRAR ++++++++++++++++++
 int calibrar(int pinSensor, int limite)
 {
-  Serial.println("Calibrar:");
+//  Serial.println("Calibrar:");
   int i = 0, valorMax = 0;
 
   int signalTomada = 0;
@@ -95,18 +103,18 @@ int calibrar(int pinSensor, int limite)
     signalTomada = getSignal(pinSensor, limite);
     Serial.print("senal tomada: ");
     Serial.println(signalTomada);
-    Serial.print("valor maximo: ");
-    Serial.println(valorMax);
-    delay(500);
+//    Serial.print("valor maximo: ");
+//    Serial.println(valorMax);
+//    delay(500);
     if (signalTomada > valorMax)
     {
       valorMax = signalTomada;
     }
     i++;
   }
-  Serial.print("========================valor senal: ");
-  Serial.println(valorMax);
-  delay(5000);
+//  Serial.print("========================valor senal: ");
+//  Serial.println(valorMax);
+//  delay(5000);
 
   return valorMax;
 }
