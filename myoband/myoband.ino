@@ -1,3 +1,5 @@
+#include <EMGFilters.h>
+
 #include <SoftwareSerial.h>
 
 //Librerias del sensor GY
@@ -80,9 +82,10 @@ delay(2000);
 
 } // END LOOP
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ OBTENER SIGNAL++++++++++++++++++
 int getSignal(int pinSeleccionado, int limite)
 {
-
   //escalaTiempo = micros();
   int Value = analogRead(pinSeleccionado);
   // procesamos la filtracion
@@ -97,6 +100,8 @@ int getSignal(int pinSeleccionado, int limite)
 
   return valorObtenido;
 }
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CALIBRAR ++++++++++++++++++
 int calibrar(int pinSensor, int limite)
 {
   
@@ -109,6 +114,7 @@ int calibrar(int pinSensor, int limite)
   { Serial.println("cant mediciones");
   Serial.println(i);
     signalTomada = getSignal(pinSensor, limite);
+
     if (signalTomada > valorMax and signalTomada<1000)
       valorMax = signalTomada;
     if(signalTomada>100)
@@ -119,6 +125,8 @@ int calibrar(int pinSensor, int limite)
   delay(1500);
   return valorMax;
 }
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ IS CALIBRADO ++++++++++++++++++
 bool isCalibrado()
 {
 
@@ -139,6 +147,8 @@ bool isCalibrado()
         return true;
      }
 }
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CALCULAR PROMEDIO SIGNAL ++++++++++++++++++
 int calcularSignalProm(int pinSensor, int limite)
 {
   int i = 0, total = 0, prom=0;
@@ -151,6 +161,8 @@ int calcularSignalProm(int pinSensor, int limite)
   return prom;
 }
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CONTROL ++++++++++++++++++
 void control(int valorPromedio){
   int valorSelector = getSignal(SensorInputSelectorPin, Limite_selector);
   if(valorSelector > valorPromedio){
@@ -160,7 +172,7 @@ void control(int valorPromedio){
   imprimirSeleccion();
 }
 
-
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ACTIVAR ++++++++++++++++++
 void activar(int valorPromedio){
    int valorAccion = getSignal(SensorInputAccionPin, Limite_accion);
   if(valorAccion > valorPromedio){
@@ -168,6 +180,8 @@ void activar(int valorPromedio){
   }
 }
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CAMBIAR DIRECCION ++++++++++++++++++
 int cambiarDireccion(){
   if(menu > 4){
     menu = 1;
@@ -177,20 +191,22 @@ int cambiarDireccion(){
   return menu;
 }
 
+
+// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ IMPRIMIR SELECCION ++++++++++++++++++
 void imprimirSeleccion(){
   switch (menu)
   {
   case 1:
-      Serial.print("ADELANTE");
+      Serial.println("ADELANTE");
     break;
   case 2:
-      Serial.print("DERECHA");
+      Serial.println("DERECHA");
     break;
   case 3:
-      Serial.print("IZQUIERDA");
+      Serial.println("IZQUIERDA");
     break;
   case 4:
-      Serial.print("ATRAS");
+      Serial.println("ATRAS");
     break;
   }
 }
