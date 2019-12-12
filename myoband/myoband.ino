@@ -61,22 +61,6 @@ delay(2000);
 delay(2000);
   if (!isCalibrado())
   {
-<<<<<<< HEAD
-    Serial.print("CALIBRADO: ");
-    Serial.println(!isCalibrado());
-    Limite_selector = calibrar(SensorInputSelectorPin, Limite_selector);
-    //Limite_accion = calibrar(SensorInputAccionPin, Limite_accion);
-    prom1 = calcularSignalProm(SensorInputSelectorPin, Limite_selector);
-    //prom2 = calcularSignalProm(SensorInputAccionPin, Limite_accion);
-  }
-  // ------------------------------------------ ENVIO DE INFORMACION ------------------------
-    //Serial.println("OBTENER SENAL:");
-    //Serial.println(prom1);
-    while(true){
-      control(prom1);
-    //activar(prom2);
-    }
-=======
     Serial.print("aqui empieza la calibracion");
  
     Limite_selector = calibrar(SensorInputSelectorPin, Limite_selector);
@@ -95,7 +79,6 @@ delay(2000);
     control(prom1);
     activar(prom2);
    }
->>>>>>> 6d57cb70631736a23572476aaa8738ff3de04ccc
 
 } // END LOOP
 
@@ -103,28 +86,11 @@ delay(2000);
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ OBTENER SIGNAL++++++++++++++++++
 int getSignal(int pinSeleccionado, int limite)
 {
-<<<<<<< HEAD
-  Serial.println("================metodo obtener senal============");
-  Serial.print("limite: ");
-  Serial.println(limite);
-  Serial.print("pin: ");
-  Serial.println(pinSeleccionado);
-  delay(500);
-  
-=======
-
->>>>>>> 6d57cb70631736a23572476aaa8738ff3de04ccc
   //escalaTiempo = micros();
   int Value = analogRead(pinSeleccionado);
   // procesamos la filtracion
   int DataAfterFilter = filtro.update(Value);
   int valorObtenido = sq(DataAfterFilter);
-<<<<<<< HEAD
-    // any value under threshold will be set to zero
-    valorObtenido = (valorObtenido > limite) ? valorObtenido : 0;
-    // escalaTiempo = micros() - escalaTiempo;  
-    return valorObtenido;
-=======
   // any value under threshold will be set to zero
   valorObtenido = (valorObtenido > limite) ? valorObtenido : 0;
   // escalaTiempo = micros() - escalaTiempo;
@@ -133,18 +99,13 @@ int getSignal(int pinSeleccionado, int limite)
     Serial.println(valorObtenido);
 
   return valorObtenido;
->>>>>>> 6d57cb70631736a23572476aaa8738ff3de04ccc
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CALIBRAR ++++++++++++++++++
 int calibrar(int pinSensor, int limite)
 {
-<<<<<<< HEAD
-//  Serial.println("Calibrar:");
-=======
   
   delay(1500);
->>>>>>> 6d57cb70631736a23572476aaa8738ff3de04ccc
   int i = 0, valorMax = 0;
 
   int signalTomada = 0;
@@ -153,41 +114,21 @@ int calibrar(int pinSensor, int limite)
   { Serial.println("cant mediciones");
   Serial.println(i);
     signalTomada = getSignal(pinSensor, limite);
-<<<<<<< HEAD
-    Serial.print("senal tomada: ");
-    Serial.println(signalTomada);
-//    Serial.print("valor maximo: ");
-//    Serial.println(valorMax);
-//    delay(500);
-    if (signalTomada > valorMax)
-    {
-=======
+
     if (signalTomada > valorMax and signalTomada<1000)
->>>>>>> 6d57cb70631736a23572476aaa8738ff3de04ccc
       valorMax = signalTomada;
     if(signalTomada>100)
     i++;
   }
-<<<<<<< HEAD
-//  Serial.print("========================valor senal: ");
-//  Serial.println(valorMax);
-//  delay(5000);
-
-=======
   Serial.print("LIMITE ESTABLECIDO ");
   Serial.print(valorMax);
   delay(1500);
->>>>>>> 6d57cb70631736a23572476aaa8738ff3de04ccc
   return valorMax;
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ IS CALIBRADO ++++++++++++++++++
 bool isCalibrado()
 {
-<<<<<<< HEAD
-  if (/*Limite_accion == 0 && */Limite_selector == 0)
-    return false;
-=======
 
   
   Serial.println("isCalibrado");
@@ -198,7 +139,6 @@ bool isCalibrado()
   delay(2500);
   if (Limite_accion == 0)
      return false;
->>>>>>> 6d57cb70631736a23572476aaa8738ff3de04ccc
   else
      { 
       if (Limite_selector == 0)
