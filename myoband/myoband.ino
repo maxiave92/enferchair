@@ -23,13 +23,11 @@ static int Limite_accion = 800;
 unsigned long escalaTiempo;
 unsigned long tiempoMedio;
 
-
 int menu = 0;
 int prom1 = 0;
 int prom2 = 0;
 
 SoftwareSerial mySerial(10, 11); //rx tx
-
 
 void setup()
 {
@@ -50,38 +48,38 @@ void loop()
 
   // ------------------------------------------ CALIBRACION ------------------------------
 
-     Serial.print("Limite_selector ");
+  Serial.print("Limite_selector ");
   Serial.println(Limite_selector);
   delay(2000);
-     Serial.print("Limite_accion");
+  Serial.print("Limite_accion");
   Serial.println(Limite_accion);
-delay(2000);
-     Serial.print("calculo promedio ");
+  delay(2000);
+  Serial.print("calculo promedio ");
   Serial.println(Limite_selector);
-delay(2000);
+  delay(2000);
   if (!isCalibrado())
   {
     Serial.print("aqui empieza la calibracion");
- 
+
     Limite_selector = calibrar(SensorInputSelectorPin, Limite_selector);
-   // Limite_accion = calibrar(SensorInputAccionPin, Limite_accion);
-   Serial.print("calculo Limite_selector ");
-  Serial.print(Limite_selector);
-  delay(5000);
-    prom1 = calcularSignalProm(SensorInputSelectorPin,Limite_selector);
+    // Limite_accion = calibrar(SensorInputAccionPin, Limite_accion);
     Serial.print("calculo Limite_selector ");
-  Serial.print(prom1);
-   // prom2 = calcularSignalProm(SensorInputAccionPin, Limite_accion);
+    Serial.print(Limite_selector);
+    delay(5000);
+    prom1 = calcularSignalProm(SensorInputSelectorPin, Limite_selector);
+    Serial.print("calculo Limite_selector ");
+    Serial.print(prom1);
+    // prom2 = calcularSignalProm(SensorInputAccionPin, Limite_accion);
   }
   // ------------------------------------------ ENVIO DE INFORMACION ------------------------
-  int i=0;
-   while(i==0){
+  int i = 0;
+  while (i == 0)
+  {
     control(prom1);
     activar(prom2);
-   }
+  }
 
 } // END LOOP
-
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ OBTENER SIGNAL++++++++++++++++++
 int getSignal(int pinSeleccionado, int limite)
@@ -94,9 +92,9 @@ int getSignal(int pinSeleccionado, int limite)
   // any value under threshold will be set to zero
   valorObtenido = (valorObtenido > limite) ? valorObtenido : 0;
   // escalaTiempo = micros() - escalaTiempo;
-  
-    Serial.print("lectura de senal ");
-    Serial.println(valorObtenido);
+
+  Serial.print("lectura de senal ");
+  Serial.println(valorObtenido);
 
   return valorObtenido;
 }
@@ -104,21 +102,22 @@ int getSignal(int pinSeleccionado, int limite)
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CALIBRAR ++++++++++++++++++
 int calibrar(int pinSensor, int limite)
 {
-  
+
   delay(1500);
   int i = 0, valorMax = 0;
 
   int signalTomada = 0;
 
   while (i < 100)
-  { Serial.println("cant mediciones");
-  Serial.println(i);
+  {
+    Serial.println("cant mediciones");
+    Serial.println(i);
     signalTomada = getSignal(pinSensor, limite);
 
-    if (signalTomada > valorMax and signalTomada<1000)
+    if (signalTomada > valorMax and signalTomada < 1000)
       valorMax = signalTomada;
-    if(signalTomada>100)
-    i++;
+    if (signalTomada > 100)
+      i++;
   }
   Serial.print("LIMITE ESTABLECIDO ");
   Serial.print(valorMax);
@@ -130,7 +129,6 @@ int calibrar(int pinSensor, int limite)
 bool isCalibrado()
 {
 
-  
   Serial.println("isCalibrado");
   delay(1500);
   Serial.println(Limite_accion);
@@ -138,75 +136,80 @@ bool isCalibrado()
   Serial.println(Limite_selector);
   delay(2500);
   if (Limite_accion == 0)
-     return false;
+    return false;
   else
-     { 
-      if (Limite_selector == 0)
-        return false;
-      else
-        return true;
-     }
+  {
+    if (Limite_selector == 0)
+      return false;
+    else
+      return true;
+  }
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CALCULAR PROMEDIO SIGNAL ++++++++++++++++++
 int calcularSignalProm(int pinSensor, int limite)
 {
-  int i = 0, total = 0, prom=0;
+  int i = 0, total = 0, prom = 0;
   while (i < 100)
   {
     total += getSignal(pinSensor, limite);
-    i++; 
+    i++;
   }
   prom = total / 100;
   return prom;
 }
 
-
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CONTROL ++++++++++++++++++
-void control(int valorPromedio){
+void control(int valorPromedio)
+{
   int valorSelector = getSignal(SensorInputSelectorPin, Limite_selector);
-  if(valorSelector > valorPromedio){
+  if (valorSelector > valorPromedio)
+  {
     menu = cambiarDireccion();
-    
   }
   imprimirSeleccion();
 }
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ACTIVAR ++++++++++++++++++
-void activar(int valorPromedio){
-   int valorAccion = getSignal(SensorInputAccionPin, Limite_accion);
-  if(valorAccion > valorPromedio){
-     mySerial.write(menu);
+void activar(int valorPromedio)
+{
+  int valorAccion = getSignal(SensorInputAccionPin, Limite_accion);
+  if (valorAccion > valorPromedio)
+  {
+    mySerial.write(menu);
   }
 }
 
-
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CAMBIAR DIRECCION ++++++++++++++++++
-int cambiarDireccion(){
-  if(menu > 4){
+int cambiarDireccion()
+{
+  if (menu > 4)
+  {
     menu = 1;
-  } else {
+  }
+  else
+  {
     menu++;
   }
   return menu;
 }
 
-
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ IMPRIMIR SELECCION ++++++++++++++++++
-void imprimirSeleccion(){
+void imprimirSeleccion()
+{
   switch (menu)
   {
   case 1:
-      Serial.println("ADELANTE");
+    Serial.println("ADELANTE");
     break;
   case 2:
-      Serial.println("DERECHA");
+    Serial.println("DERECHA");
     break;
   case 3:
-      Serial.println("IZQUIERDA");
+    Serial.println("IZQUIERDA");
     break;
   case 4:
-      Serial.println("ATRAS");
+    Serial.println("ATRAS");
     break;
   }
 }
